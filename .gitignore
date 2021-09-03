@@ -1,0 +1,5 @@
+*.sqlite
+*.aux
+*.pdf
+*.log
+*.txt

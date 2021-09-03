@@ -1,0 +1,62 @@
+\documentclass[10pt]{article}
+\usepackage{ifthen}
+\usepackage{fontspec}
+\usepackage{csvsimple}
+\usepackage[margin=0.5in]{geometry}
+
+\hbadness=10000 %don't care about all these underflow things.
+\addtolength{\textheight}{-0.25in} %Otherwise we'll have tons of whitespace
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%This font may need to be changed based on the need of your languages
+\setmainfont{Quivira}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% taken from https://saveman71.com/2017/side-by-side-latex/
+\usepackage{xparse}
+
+% Two minipages side by side
+% Provide the size of each minipage with two optional arguments
+% First one defaults to .50 and second argument defaults to value of the first
+\NewDocumentEnvironment{sidebyside}{O{.50} o +m +m}{%
+  \noindent\begin{minipage}[t][][t]{#1\linewidth}%
+  #3% Content of the first minipage
+  \end{minipage}%
+  \hfill%
+  \noindent\begin{minipage}[t][][t]{\IfValueTF{#2}{#2}{#1}\linewidth}%
+  #4% Content of the second minipage
+  \end{minipage}\\% newline is important, it allows \hfill to work correctly, try removing it ;)
+}
+
+
+% Modified used
+\NewDocumentEnvironment{sidebysidebyside}{O{.30} o o +m +m +m}{%
+  \noindent\begin{minipage}[t][][t]{#1\linewidth}%
+  #4% Content of the first minipage
+  \end{minipage}%
+  \hfill%
+  \noindent\begin{minipage}[t][][t]{\IfValueTF{#2}{#2}{#1}\linewidth}%
+  #5% Content of the second minipage
+  \end{minipage}
+  \hfill
+  \noindent\begin{minipage}[t][][t]{\IfValueTF{#2} { \IFValueTF{#3}{ #3 }{ #2 } }{ #1 }\linewidth}%
+  #6% Content of the first minipage
+  \end{minipage}\\% newline is important, it allows \hfill to work correctly, try removing it ;)
+}
+
+\begin{document}
+	\csvreader[
+		no head,
+		late after line=\\,
+		late after last line=\\,
+		separator=tab
+	] {outputfinal.txt} {}
+	{
+		\ifthenelse{\equal{\csvcoliii}{1}} { \section*{Chapter \csvcolii} }{ }
+		\sidebysidebyside
+			{ \csvcoliii \hspace{3pt} \csvcoliv}
+			{ \csvcoliii \hspace{3pt} \csvcolv}
+			{ \csvcoliii \hspace{3pt} \csvcolvi }
+	}
+\end{document}
